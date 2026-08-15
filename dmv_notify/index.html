@@ -1,1 +1,192 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DMV Notify</title>
+ 
+<style>
+body {
+font-family: Arial, sans-serif;
+padding: 20px;
+background-color: #f5f7fa;
+}
+ 
+h1 {
+text-align: center;
+}
+ 
+.form-container {
+max-width: 800px;
+margin: auto;
+background: white;
+padding: 20px;
+border-radius: 10px;
+box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+}
+ 
+.field {
+margin-bottom: 15px;
+}
+ 
+label {
+display: block;
+font-weight: bold;
+margin-bottom: 5px;
+}
+ 
+input,
+textarea,
+select {
+width: 100%;
+padding: 8px;
+border-radius: 6px;
+border: 1px solid #ccc;
+box-sizing: border-box;
+}
+ 
+textarea {
+height: 80px;
+}
+ 
+button {
+margin-top: 15px;
+padding: 10px 15px;
+border: none;
+background: #2563eb;
+color: white;
+border-radius: 6px;
+cursor: pointer;
+margin-right: 10px;
+}
+ 
+button:hover {
+background: #1d4ed8;
+}
+ 
+#summary {
+height: 250px;
+background: #f9fafb;
+font-family: Consolas, monospace;
+}
+</style>
+</head>
+ 
+<body>
+ 
+<h1>DMV Notify</h1>
+ 
+<div class="form-container">
+ 
+<div class="field">
+<label>VIN</label>
+<input id="vin">
+</div>
+ 
+<div class="field">
+<label>Vehicle Year / Make / Model</label>
+<input id="vehicleInfo">
+</div>
+ 
+<div class="field">
+<label>State Standing Letter</label>
+<input id="stateStandingLetter">
+</div>
+ 
+<div class="field">
+<label>Case Number / Reference Number</label>
+<input id="caseNumber">
+</div>
+ 
+<div class="field">
+<label>Names on Registration</label>
+<input id="registrationNames">
+</div>
+ 
+<div class="field">
+<label>Registered State</label>
+<input id="registeredState">
+</div>
+ 
+<div class="field">
+<label>Date Registered</label>
+<input id="dateRegistered" type="date">
+</div>
+ 
+<div class="field">
+<label>Dates Being Requested for Coverage</label>
+<textarea id="coverageDates"></textarea>
+</div>
+ 
+<div class="field">
+<label>Updates Made to Policy</label>
+<textarea id="policyUpdates"></textarea>
+</div>
+ 
+<div class="field">
+<label>Request Reason</label>
+<textarea id="requestReason"></textarea>
+</div>
+ 
+<div class="field">
+<label>DMV Notify Summary</label>
+<textarea id="summary" readonly></textarea>
+</div>
+ 
+<button onclick="clearForm()">Clear All Fields</button>
+ 
+</div>
+ 
+<script>
+const fields = [
+{ id: 'vin', label: 'VIN' },
+{ id: 'vehicleInfo', label: 'Vehicle Year/Make/Model' },
+{ id: 'stateStandingLetter', label: 'State Standing Letter' },
+{ id: 'caseNumber', label: 'Case Number/Reference Number' },
+{ id: 'registrationNames', label: 'Names on Registration' },
+{ id: 'registeredState', label: 'Registered State' },
+{ id: 'dateRegistered', label: 'Date Registered' },
+{ id: 'coverageDates', label: 'Dates Being Requested for Coverage' },
+{ id: 'policyUpdates', label: 'Updates Made to Policy' },
+{ id: 'requestReason', label: 'Request Reason' }
+];
+ 
+function updateSummary() {
+let results = [];
+ 
+fields.forEach(field => {
+const el = document.getElementById(field.id);
+ 
+if (el && el.value.trim() !== '') {
+results.push(`${field.label}: ${el.value}`);
+}
+});
+ 
+document.getElementById('summary').value =
+results.join('\n\n');
+}
+ 
+function clearForm() {
+document.querySelectorAll('input, textarea').forEach(el => {
+if (el.id !== 'summary') {
+el.value = '';
+}
+});
+ 
+updateSummary();
+ 
+document.getElementById('vin').focus();
+}
+ 
+document.addEventListener('DOMContentLoaded', () => {
+document.querySelectorAll('input, textarea').forEach(el => {
+if (el.id !== 'summary') {
+el.addEventListener('input', updateSummary);
+el.addEventListener('change', updateSummary);
+}
+});
+});
+</script>
+ 
+</body>
+</html>
