@@ -1,1 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>State Action Lookup!</title>
 
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #0018F9;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        transition: background-color 0.3s ease;
+    }
+
+    .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    #azClock {
+        color: white;
+        font-size: 30px;
+        font-weight: bold;
+        margin-bottom: 20px;
+        letter-spacing: 1px;
+        text-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    }
+
+    .card {
+        background-color: white;
+        padding: 30px 40px;
+        border-radius: 15px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        width: 450px;
+        text-align: center;
+    }
+
+    h2 {
+        margin-bottom: 20px;
+    }
+
+    input {
+        padding: 12px;
+        font-size: 16px;
+        width: 100%;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        margin-bottom: 20px;
+        outline: none;
+        transition: border 0.2s ease;
+        box-sizing: border-box;
+    }
+
+    input:focus {
+        border-color: #0018F9;
+    }
+
+    #result {
+        margin-top: 10px;
+        font-size: 15px;
+        text-align: left;
+        line-height: 1.6;
+    }
+
+    .label {
+        font-weight: bold;
+    }
+
+    .tooltip {
+        text-decoration: underline dotted;
+        cursor: help;
+    }
+
+    .state-title {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 10px;
+        text-align: center;
+    }
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <div id="azClock">Loading Arizona Time...</div>
+
+    <div class="card">
+        <h2>State Action Lookup!</h2>
+
+        <input type="text" id="stateInput"
+            placeholder="Type state name or abbreviation..."
+            oninput="lookupState()" />
+
+        <div id="result"></div>
+    </div>
+
+</div>
+
+<script>
+
+function updateArizonaClock() {
+    const now = new Date();
+
+    const azTime = now.toLocaleTimeString("en-US", {
+        timeZone: "America/Phoenix",
+        hour12: true,
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
+    });
+
+    document.getElementById("azClock").innerText =
+        `Arizona Time: ${azTime}`;
+}
+
+updateArizonaClock();
+setInterval(updateArizonaClock, 1000);
+
+const states = [
+        {abbr:"AL", name:"Alabama", action:"All",dp1_reprints:"R3ConfirmProc@geico.com", underwriting:"uw3@geico.com",move:"Please transfer to Sales",cancellation:"No special handling required",reissue:"Transfer to Reissue department-- QC024",DDC:"55 or 50 - Depends on policy",LIABILITY:"Yes, both compulsory and no-fault insurance are required",TAGS:"The plates must be surrendered as soon as possible"},
+    {abbr:"AK", name:"Alaska", action:"All",dp1_reprints:"R4ConfirmProc@geico.com", underwriting:"uw4@geico.com",move:"Please transfer to Sales",cancellation:"No special handling required",reissue:"Transfer to Reissue department-- QC114",DDC:"55 or 50 - Depends on policy",LIABILITY:"Yes.",TAGS:"No"},
+    {abbr:"AZ", name:"Arizona", action:"All",dp1_reprints:"R10ConfirmProc@geico.com", underwriting:"uw10@geico.com",move:"Please transfer to Sales",cancellation:"No special handling required",reissue:"You can reissue/restart for this state-- QC024",DDC:"55 or 50 - Depends on policy",LIABILITY:"Yes, compulsory insurance is required.",TAGS:"No, but the policyholder needs to complete a de-insurance certificate at the MVD as soon as possible if they place their vehicle in storage or are keeping their vehicle registered in their name and removing liability coverage."},
+    {abbr:"AR", name:"Arkansas", action:"All",dp1_reprints:"R3ConfirmProc@geico.com", underwriting:"uw3@geico.com",move:"Please transfer to Sales",cancellation:"No special handling required",reissue:"Transfer to Reissue department-- QC113",DDC:"55 or 50 - Depends on policy",LIABILITY:"Yes. ",TAGS:"The plates must be surrendered as soon as possible."},
+    {abbr:"CA", name:"California", action:"Billing, Payments, POC, Lienholder",dp1_reprints:"R4ConfirmProc@geico.com", underwriting:"uw4@geico.com",move:"Please transfer to Service",cancellation:"No special handling required",reissue:"Transfer to Reissue department-- QC024",DDC:"50+",LIABILITY:"Yes, financial responsibility - motor vehicle owners may satisfy the state by another means, such as posting of a bond or self-insurance.",TAGS:"No, but the policyholder must complete an affidavit of non-use with the DMV if they place their vehicle in storage or are keeping their vehicle registered in their name and removing liability coverage."},
+    {abbr:"CO", name:"Colorado", action:"All",dp1_reprints:"R5ConfirmProc@geico.com", underwriting:"uw5@geico.com",move:"Please transfer to Sales",cancellation:"No special handling required",reissue:"Transfer to Reissue department-- QC113",DDC:"55 or 50 - Depends on policy",LIABILITY:"No.",TAGS:"The plates must be surrendered as soon as possible. "},
+    {abbr:"CT", name:"Connecticut", action:"Billing, Payments, POC, Lienholder",dp1_reprints:"uwpr@geico.com", underwriting:"uw8@geico.com",move:"Please transfer to Service",cancellation:"No special handling required",reissue:"Transfer to Reissue department-- QC114",DDC:"50+",LIABILITY:"Yes, motor vehicle owners are required to maintain motor vehicle liability insurance on their vehicles.",TAGS:"The plates must be surrendered within 14 days of removing coverage from this vehicle"},
+    {abbr:"DC", name:"District of Columbia", action:"All",dp1_reprints:"R1ConfirmProc@geico.com", underwriting:"uw1@geico.com",move:"Please transfer to Sales",cancellation:"No special handling required",reissue:"Transfer to Reissue department-- QC113",DDC:"No Age Restriction",LIABILITY:"Yes",TAGS:"The active or expired tags are required to be surrendered before removing coverage from this vehicle"},
+    {abbr:"DE", name:"Delaware", action:"All",dp1_reprints:"R1ConfirmProc@geico.com", underwriting:"uw1@geico.com",move:"Please transfer to Sales",cancellation:"See 'Cancellation Requests' article for special handling",reissue:"Transfer to Reissue department-- QC113",DDC:"No Age Restriction",LIABILITY:"Yes.",TAGS:"Yes, the active or expired tags are required to be surrendered before removing coverage from a vehicle."},
+    {abbr:"FL", name:"Florida", action:"Billing, Payments, POC, Lienholder",dp1_reprints:"R6ConfirmProc@geico.com", underwriting:"uw6@geico.com",move:"Please transfer to Sales",cancellation:"See 'Cancellation Requests' article for special handling",reissue:"Transfer to Reissue department-- QC024",DDC:"55 or 50 - Depends on policy",LIABILITY:"Bodily Injury is not required to register a vehicle in Florida, failure to have this coverage in place at the time of an accident that results in bodily injury or property damage will result in an SR-22 or CFR. Property Damage and Personal Injury Protection are required to register a vehicle in Florida.",TAGS:"No, the physical tags do not have to be surrendered; however, the registration needs to be cancelled."},
+    {abbr:"GA", name:"Georgia", action:"All",dp1_reprints:"R3ConfirmProc@geico.com", underwriting:"uw3@geico.com",move:"Please transfer to Sales",cancellation:"See 'Cancellation Requests' article for special handling",reissue:"Transfer to Reissue department-- QC024",DDC:"No Age Restriction",LIABILITY:"Yes, compulsory-motor vehicle owners are required to maintain motor vehicle liability and/or no-fault insurance on their vehicles.",TAGS:"The plates must be surrendered as soon as possible."},
+    {abbr:"HI", name:"Hawaii", action:"Billing, Payments, POC, Lienholder",dp1_reprints:"R4ConfirmProc@geico.com", underwriting:"uw4@geico.com",move:"Please transfer to Service",cancellation:"No special handling required",reissue:"Transfer to Reissue department-- QC212",DDC:"Not Available",LIABILITY:"Yes, compulsory - motor vehicle owners are required to maintain motor vehicle liability and/or no-fault insurance on their vehicles.",TAGS:"No"},
+    {abbr:"ID", name:"Idaho", action:"Billing, Payments, POC, Lienholder",dp1_reprints:"R10ConfirmProc@geico.com", underwriting:"uw10@geico.com",move:"Please transfer to Sales",cancellation:"No special handling required",reissue:"Transfer to Reissue department-- QC113",DDC:"55 or 50 - Depends on policy",LIABILITY:"Yes, Compulsory - Motor vehicle owners are required to maintain motor vehicle liability and/or no-fault insurance on their vehicles.",TAGS:"Yes. See 'Insurance requirements for Idaho'"},
+    {abbr:"IL", name:"Illinois", action:"All", dp1_reprints:"R2ConfirmProc@geico.com", underwriting:"uw9@geico.com",move:"Please transfer to Sales",cancellation:"No special handling required",reissue:"Transfer to Reissue department-- QC024",DDC:"55 or 50 - Depends on policy",LIABILITY:"Yes. ",TAGS:"The plates must be surrendered as soon as possible."},
+    {abbr:"IN", name:"Indiana", action:"All", dp1_reprints:"R2ConfirmProc@geico.com", underwriting:"uw9@geico.com",move:"Please transfer to Sales",cancellation:"No special handling required",reissue:"Transfer to Reissue department-- QC113",DDC:"55+",LIABILITY:"Yes, compulsory. Motor vehicle owners are required to maintain motor vehicle liability and/or no-fault insurance on their vehicles.",TAGS:"The vehicle’s license plate or registration does not need to be returned the BMV."},
+    {abbr:"IA", name:"Iowa", action:"Billing, Payments, POC, Lienholder",dp1_reprints:"R5ConfirmProc@geico.com", underwriting:"uw5@geico.com",move:"Please transfer to Sales",cancellation:"No special handling required",reissue:"Transfer to Reissue department-- QC114",DDC:"50 or No Age Restriction - Depends on policy",LIABILITY:"Yes.",TAGS:"No"},
+    {abbr:"KS", name:"Kansas", action:"Billing, Payments, POC, Lienholder",dp1_reprints:"R5ConfirmProc@geico.com", underwriting:"uw5@geico.com",move:"Please transfer to Sales",cancellation:"No special handling required",reissue:"Transfer to Reissue department-- QC113",DDC:"No Age Restriction",LIABILITY:"Yes.",TAGS:"The plates must be surrendered as soon as possible."},
+    {abbr:"KY", name:"Kentucky", action:"Billing, Payments, POC, Lienholder", dp1_reprints:"R2ConfirmProc@geico.com", underwriting:"uw9@geico.com",move:"Please transfer to Sales",cancellation:"No special handling required",reissue:"Transfer to Reissue department-- QC113",DDC:"55 or 50 - Depends on policy",LIABILITY:"Yes, compulsory. Motor vehicle owners are required to maintain motor vehicle liability and/or no-fault insurance on their vehicles.",TAGS:"The plates must be surrendered within 30 days of removing coverage from this vehicle"},
+    {abbr:"LA", name:"Louisiana", action:"All",dp1_reprints:"R3ConfirmProc@geico.com", underwriting:"uw3@geico.com",move:"Please transfer to Sales",cancellation:"Requires written request",reissue:"Transfer to Reissue department-- QC113",DDC:"50+",LIABILITY:"Yes, compulsory. Motor vehicle owners are required to maintain motor vehicle liability and/or no-fault insurance on their vehicles.",TAGS:"The plates must be surrendered prior to canceling insurance to avoid penalties and fines."},
+    {abbr:"ME", name:"Maine", action:"All",dp1_reprints:"uwpr@geico.com", underwriting:"uw8@geico.com",move:"Please transfer to Sales",cancellation:"No special handling required",reissue:"Transfer to Reissue department-- QC113",DDC:"55 or 50 - Depends on policy",LIABILITY:"Yes",TAGS:"No, but the policyholder must complete an affidavit of non-use with the DMV if they place their vehicle in storage or are keeping their vehicle registered in their name and removing liability coverage."},
+    {abbr:"MD", name:"Maryland", action:"Billing, Payments, POC, Lienholder",dp1_reprints:"R1ConfirmProc@geico.com", underwriting:"uw1@geico.com",move:"Please transfer to Sales",cancellation:"No special handling required",reissue:"Transfer to Reissue department-- QC024",DDC:"55 or 50 - Depends on policy",LIABILITY:"Yes",TAGS:"Yes, See \"Maryland Insurance Requirements\""},
+    {abbr:"MA", name:"Massachusetts", action:"Payments & Billing ONLY",dp1_reprints:"uwpr@geico.com", underwriting:"uw8@geico.com",move:"Please transfer to Service",cancellation:"Requires written request*",reissue:"Transfer to Reissue department-- QC024",DDC:"Not Available",LIABILITY:"Yes, motor vehicle owners are required to maintain motor vehicle liability and no-fault insurance on their vehicles.",TAGS:"Yes, See \"Insurance requirements for Massachusetts\""},
+    {abbr:"MI", name:"Michigan", action:"Billing, Payments, POC, Lienholder", dp1_reprints:"R2ConfirmProc@geico.com", underwriting:"uw9@geico.com",move:"Please transfer to Service",cancellation:"No special handling required",reissue:"Transfer to Reissue department-- QC011",DDC:"50+",LIABILITY:"No",TAGS:"The plates must be surrendered as soon as possible"},
+    {abbr:"MN", name:"Minnesota", action:"All", dp1_reprints:"R2ConfirmProc@geico.com", underwriting:"uw9@geico.com",move:"Please transfer to Sales",cancellation:"No special handling required",reissue:"Transfer to Reissue department-- QC113",DDC:"55 or 50 - Depends on policy",LIABILITY:"Yes, motor vehicle owners may satisfy the state's Financial Responsibility Law by another means, such as self-insurance or posting of a bond.",TAGS:"The plates must be surrendered as soon as possible"},
+    {abbr:"MS", name:"Mississippi", action:"Billing, Payments, POC, Lienholder",dp1_reprints:"R3ConfirmProc@geico.com", underwriting:"uw3@geico.com",move:"Please transfer to Sales",cancellation:"No special handling required",reissue:"Transfer to Reissue department-- QC113",DDC:"55 or 50 - Depends on policy",LIABILITY:"Yes, Compulsory-Motor vehicle owners are required to maintain motor vehicle liability and/or no-fault insurance on their vehicles.",TAGS:"The plates must be surrendered as soon as possible"},
+    {abbr:"MO", name:"Missouri", action:"Billing, Payments, POC, Lienholder", dp1_reprints:"R2ConfirmProc@geico.com", underwriting:"uw9@geico.com",move:"Please transfer to Sales",cancellation:"No special handling required",reissue:"Transfer to Reissue department-- QC024",DDC:"50+",LIABILITY:"Yes, Compulsory",TAGS:"The plates must be surrendered as soon as possible"},
+    {abbr:"MT", name:"Montana", action:"All",dp1_reprints:"R10ConfirmProc@geico.com", underwriting:"uw10@geico.com",move:"Please transfer to Sales",cancellation:"No special handling required",reissue:"Transfer to Reissue department-- QC114",DDC:"55 or 50 - Depends on policy",LIABILITY:"Yes, Compulsory",TAGS:"No"},
+    {abbr:"NE", name:"Nebraska", action:"All",dp1_reprints:"R5ConfirmProc@geico.com", underwriting:"uw5@geico.com",move:"Please transfer to Sales",cancellation:"No special handling required",reissue:"Transfer to Reissue department-- QC114",DDC:"50+",LIABILITY:"Yes",TAGS:"No"},
+    {abbr:"NV", name:"Nevada", action:"All",dp1_reprints:"R10ConfirmProc@geico.com", underwriting:"uw10@geico.com",move:"You can process moves to this state",cancellation:"No special handling required",reissue:"Transfer to Reissue department-- QC114",DDC:"50+",LIABILITY:"Yes, Compulsory Motor vehicle owners are required to maintain motor vehicle liability and/or no-fault insurance on their vehicles.",TAGS:"Yes, See \"Insurance requirements for Nevada\""},
+    {abbr:"NH", name:"New Hampshire", action:"All",dp1_reprints:"uwpr@geico.com", underwriting:"uw8@geico.com",move:"Please transfer to Sales",cancellation:"No special handling required",reissue:"Transfer to Reissue department-- QC114",DDC:"50+",LIABILITY:"No compulsory insurance. Some form of financial responsibility is required of all drivers.",TAGS:"No"},
+    {abbr:"NJ", name:"New Jersey", action:"No Move Ins or Copy Policy",dp1_reprints:"uwpr@geico.com", underwriting:"uw8@geico.com",move:"Please transfer to Service",cancellation:"No special handling required",reissue:"Transfer to Reissue department-- QC024",DDC:"No Age Restriction",LIABILITY:"Yes, motor vehicle owners are required to maintain motor vehicle liability and no-fault insurance on their vehicles. They must carry PD and PIP at least.",TAGS:"The plates must be surrendered as soon as possible"},
+    {abbr:"NM", name:"New Mexico", action:"All",dp1_reprints:"R5ConfirmProc@geico.com", underwriting:"uw5@geico.com",move:"Please transfer to Sales",cancellation:"No special handling required",reissue:"Transfer to Reissue department-- QC113",DDC:"55 or 50 - Depends on policy",LIABILITY:"Yes",TAGS:"The plates must be surrendered as soon as possible"},
+    {abbr:"NY", name:"New York", action:"All",dp1_reprints:"R2ConfirmProc@geico.com", underwriting:"uw2@geico.com        DDC:r2ddcfax@geico.com",move:"You can process moves to this state",cancellation:"See 'Cancellation Requests' article for special handling",reissue:"Transfer to Reissue department-- QC024",DDC:"No Age Restriction",LIABILITY:"Yes, New York Insurance Law requires that all vehicles maintain New York minimum liability for the duration of any active registration. ",TAGS:"Yes. License plates must be surrendered to the DMV prior to policy cancellation, vehicle deletion, or moving out of New York. See New York License Plate Surrender for additional handling."},
+    {abbr:"NC", name:"North Carolina", action:"Billing, Payments, POC, Lienholder",dp1_reprints:"r7-exc-r7piuref@geico.com", underwriting:"uw7@geico.com",move:"Please transfer to Service",cancellation:"Requires written request*",reissue:"Transfer to Reissue department-- QC024",DDC:"Not Available",LIABILITY:"Yes",TAGS:"The plates are required to be surrendered before removing coverage from this vehicle"},
+    {abbr:"ND", name:"North Dakota", action:"All",dp1_reprints:"R5ConfirmProc@geico.com", underwriting:"uw5@geico.com",move:"Please transfer to Sales",cancellation:"No special handling required",reissue:"Transfer to Reissue department-- QC114",DDC:"No Age Restriction",LIABILITY:"Yes",TAGS:"No"},
+    {abbr:"OH", name:"Ohio", action:"All", dp1_reprints:"R2ConfirmProc@geico.com", underwriting:"uw9@geico.com",move:"Please transfer to Sales",cancellation:"No special handling required",reissue:"Transfer to Reissue department-- QC024",DDC:"60+",LIABILITY:"Yes, compulsory. Motor vehicle owners are required to maintain motor vehicle liability and/or no-fault insurance on their vehicles.",TAGS:"The plates must be surrendered as soon as possible"},
+    {abbr:"OK", name:"Oklahoma", action:"Billing, Payments, POC, Lienholder",dp1_reprints:"R5ConfirmProc@geico.com", underwriting:"uw5@geico.com",move:"Please transfer to Sales",cancellation:"No special handling required",reissue:"Transfer to Reissue department-- QC113",DDC:"No Age Restriction",LIABILITY:"Yes",TAGS:"The plates must be surrendered as soon as possible"},
+    {abbr:"OR", name:"Oregon", action:"All",dp1_reprints:"R10ConfirmProc@geico.com", underwriting:"uw10@geico.com",move:"Please transfer to Sales",cancellation:"No special handling required",reissue:"Transfer to Reissue department-- QC113",DDC:"55 or 50 - Depends on policy",LIABILITY:"Yes, compulsory. Motor vehicle owners are required to maintain motor vehicle liability and/or no-fault insurance on their vehicles.",TAGS:"No"},
+    {abbr:"PA", name:"Pennsylvania", action:"No Move Ins or Copy Policy",dp1_reprints:"R1ConfirmProc@geico.com", underwriting:"uw1@geico.com",move:"Please transfer to Sales",cancellation:"No special handling required",reissue:"Transfer to Reissue department-- QC024",DDC:"55 or 50 - Depends on policy",LIABILITY:"Yes",TAGS:"The tags must be surrendered within 30 days of removing coverage from this vehicle (unless they have been transferred to another vehicle, there is other insurance on this vehicle, or the tags are expired)."},
+    {abbr:"RI", name:"Rhode Island", action:"All",dp1_reprints:"uwpr@geico.com", underwriting:"uw8@geico.com",move:"Please transfer to Sales",cancellation:"No special handling required",reissue:"Transfer to Reissue department-- QC114",DDC:"55 or 50 - Depends on policy",LIABILITY:"Yes, motor vehicle owners are required to maintain motor vehicle liability and/or no-fault insurance on their vehicles.",TAGS:"The plates must be surrendered as soon as possible (unless they have been transferred to another vehicle or there is other insurance on this vehicle.) The vehicle can be removed before plates are surrendered."},
+    {abbr:"SC", name:"South Carolina", action:"All",dp1_reprints:"R3ConfirmProc@geico.com", underwriting:"uw3@geico.com",move:"Please transfer to Sales",cancellation:"Requires written request if within first 60 days*",reissue:"Transfer to Reissue department-- QC024",DDC:"25+ or No Age Restriction - Depends on policy",LIABILITY:"Yes, compulsory. Motor vehicle owners are required to maintain motor vehicle liability and/or no-fault insurance on their vehicles.",TAGS:"The plates are required to be surrendered before removing coverage from this vehicle (unless they have been transferred to another vehicle or there is other insurance on this vehicle)."},
+    {abbr:"SD", name:"South Dakota", action:"Billing, Payments, POC, Lienholder",dp1_reprints:"R5ConfirmProc@geico.com", underwriting:"uw5@geico.com",move:"Please transfer to Sales",cancellation:"No special handling required",reissue:"Transfer to Reissue department-- QC114",DDC:"50+",LIABILITY:"Yes",TAGS:"No"},
+    {abbr:"TN", name:"Tennessee", action:"All",dp1_reprints:"r7-exc-r7piuref@geico.com", underwriting:"uw7@geico.com",move:"Please transfer to Sales",cancellation:"No special handling required",reissue:"Transfer to Reissue department-- QC024",DDC:"55 or 50 - Depends on policy",LIABILITY:"Yes, but motor vehicle owners may satisfy the state’s Financial Responsibility Law by another means, such as self-insurance or posting of a bond.",TAGS:"Depends on the type of tags: Specialty / Personalized tags must be surrendered at renewal if no longer needed All other tags can be destroyed if they were not transferred to another vehicle"},
+    {abbr:"TX", name:"Texas", action:"Billing, Payments, POC, Lienholder",dp1_reprints:"R5ConfirmProc@geico.com", underwriting:"uw5@geico.com",move:"Please transfer to Sales",cancellation:"No special handling required",reissue:"Transfer to Reissue department-- QC024",DDC:"50+ or No Age Restriction - Depends on policy",LIABILITY:"Yes",TAGS:"No"},
+    {abbr:"UT", name:"Utah", action:"All",dp1_reprints:"R10ConfirmProc@geico.com", underwriting:"uw10@geico.com",move:"Please transfer to Sales",cancellation:"No special handling required",reissue:"Transfer to Reissue department-- QC113",DDC:"55 or 50 - Depends on policy",LIABILITY:"Yes, compulsory. Motor vehicle owners are required to maintain motor vehicle liability and/or no-fault insurance on their vehicles.",TAGS:"Utah DMV requires that all registered vehicles maintain liability insurance. Prior to placing a vehicle in Storage Plan 1, advise the policyholder to cancel registration with Utah DMV."},
+    {abbr:"VA", name:"Virginia", action:"All",dp1_reprints:"r7-exc-r7piuref@geico.com", underwriting:"uw7@geico.com",move:"Please transfer to Sales",cancellation:"No special handling required",reissue:"Transfer to Reissue department-- QC024",DDC:"55+",LIABILITY:"Yes",TAGS:"The plates are required to be surrendered before removing coverage from this vehicle (unless they have been transferred to another vehicle or there is other insurance on this vehicle.)"},
+    {abbr:"VT", name:"Vermont", action:"All",dp1_reprints:"uwpr@geico.com", underwriting:"uw8@geico.com",move:"You can process moves to this state",cancellation:"No special handling required",reissue:"Transfer to Reissue department-- QC114",DDC:"Not Available",LIABILITY:"Yes, motor vehicle owners are required to maintain motor vehicle liability insurance on their vehicles.",TAGS:"No"},
+    {abbr:"WA", name:"Washington", action:"All",dp1_reprints:"R10ConfirmProc@geico.com", underwriting:"uw10@geico.com",move:"You can process moves to this state",cancellation:"No special handling required",reissue:"Transfer to Reissue department-- QC024",DDC:"50+",LIABILITY:"Yes, compulsory. Motor vehicle owners are required to maintain motor vehicle liability and/or no-fault insurance on their vehicles.",TAGS:"No"},
+    {abbr:"WI", name:"Wisconsin", action:"Billing, Payments, POC, Lienholder", dp1_reprints:"R2ConfirmProc@geico.com", underwriting:"uw9@geico.com",move:"Please transfer to Sales",cancellation:"No special handling required",reissue:"Transfer to Reissue department-- QC024",DDC:"50+",LIABILITY:"No compulsory insurance. Some form of financial responsibility is required of all drivers. Proof must be shown after a reportable accident and after certain violations.",TAGS:"The tags are not to be returned to the DMV. They should be destroyed if they aren’t going to be used on another vehicle. They can’t be used by someone else."},
+    {abbr:"WV", name:"West Virginia", action:"Billing, Payments, POC, Lienholder",dp1_reprints:"R1ConfirmProc@geico.com", underwriting:"uw1@geico.com",move:"Please transfer to Sales",cancellation:"No special handling required",reissue:"Transfer to Reissue department-- QC113",DDC:"55 or 50 - Depends on policy",LIABILITY:"Yes",TAGS:"We recommend surrendering tags before removing coverage from the vehicle (unless they have been transferred to another vehicle, there is other insurance on this vehicle, or the tags are expired.) If the customer insists on removing a vehicle without surrendering tags, process customer's request."},
+    {abbr:"ES", name:"Elizabeth", action:"Elizabeth",dp1_reprints:"Elizabeth", underwriting:"Elizabeth",move:"Please transfer to Elizabeth",cancellation:"Only Elizabeth can cancel",reissue:"You cant reissue an Elizabeth",DDC:"Not Available"},
+    {abbr:"WY", name:"Wyoming", action:"All",dp1_reprints:"R5ConfirmProc@geico.com", underwriting:"uw5@geico.com",move:"Please transfer to Sales",cancellation:"No special handling required",reissue:"Transfer to Reissue department-- QC114",DDC:"50+",LIABILITY:"Yes",TAGS:"No"}
+];
+
+function lookupState() {
+
+    const input = document.getElementById("stateInput")
+        .value
+        .toLowerCase()
+        .trim();
+
+    const resultDiv = document.getElementById("result");
+
+    let match;
+
+    if (input.length === 2) {
+
+        match = states.find(
+            s => s.abbr.toLowerCase() === input
+        );
+
+    } else if (input.length > 2) {
+
+        match = states.find(
+            s => s.name.toLowerCase().startsWith(input)
+        );
+
+    } else {
+
+        match = null;
+    }
+
+    if (match) {
+
+        resultDiv.innerHTML = `
+            <div class="state-title">
+                ${match.name} (${match.abbr})
+            </div>
+
+            <div>
+                <span class="label">Actions Permitted:</span>
+                ${match.action}
+            </div>
+
+            <div>
+                <span class="label tooltip"
+                    title="Cancellation Requests, Forms, Proof, Documents Requested by Underwriting">
+                    Underwriting:
+                </span>
+                ${match.underwriting}
+            </div>
+
+            <div>
+                <span class="label">DP1 Reprints:</span>
+                ${match.dp1_reprints}
+            </div>
+
+            <div>
+                <span class="label">Cancellation:</span>
+                ${match.cancellation}
+            </div>
+
+            <div>
+                <span class="label">Moves to this state:</span>
+                ${match.move}
+            </div>
+
+            <div>
+                <span class="label">Reissues or Restarts:</span>
+                ${match.reissue}
+            </div>
+            <div>
+                <span class="label">DDC Age Requirement:</span>
+                ${match.DDC}
+            </div>
+            <div>
+                <span class="label">Liability Requirements:</span>
+                ${match.LIABILITY}
+            </div>
+            <div>
+                <span class="label">Tag Requirements:</span>
+                ${match.TAGS}
+            </div>
+        `;
+
+        switch (match.action) {
+
+            case "All":
+                document.body.style.backgroundColor = "#2ecc71";
+                break;
+
+            case "Billing, Payments, POC, Lienholder":
+                document.body.style.backgroundColor = "#f1c40f";
+                break;
+
+            case "Payments & Billing ONLY":
+                document.body.style.backgroundColor = "#e74c3c";
+                break;
+
+            case "No Move Ins or Copy Policy":
+                document.body.style.backgroundColor = "#e67e22";
+                break;
+
+            case "Elizabeth":
+                document.body.style.backgroundColor = "#ff66cc";
+                break;
+
+            default:
+                document.body.style.backgroundColor = "#0018F9";
+        }
+
+    } else {
+
+        resultDiv.innerHTML =
+            "<div style='text-align:center;'>No match found</div>";
+
+        document.body.style.backgroundColor = "#0018F9";
+    }
+}
+
+</script>
+
+</body>
+</html>
