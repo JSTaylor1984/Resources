@@ -1,1 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dealership Call Notes</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f5f7fa;
+    }
+    h1 {
+      text-align: center;
+    }
+    .form-container {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+    }
+    .field {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    textarea { height: 60px; }
+    button {
+      margin-top: 15px;
+      padding: 10px 15px;
+      border: none;
+      background: #2563eb;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #1d4ed8;
+    }
+  </style>
+</head>
+<body>
+  <h1>Dealership Call Notes</h1>
+  <div class="form-container">
 
+    <div class="field"><label>VIN</label><input id="vin"></div>
+    <div class="field"><label>Year</label><input id="year"></div>
+    <div class="field"><label>Make</label><input id="make"></div>
+    <div class="field"><label>Model</label><input id="model"></div>
+    <div class="field"><label>Current Odometer Reading</label><input id="odometer"></div>
+    <div class="field">
+      <label>Transferring Plates</label>
+      <select id="plates">
+        <option value="" selected></option>
+        <option>Yes</option>
+        <option>No</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>First Owner</label>
+      <select id="firstOwner">
+        <option value="" selected></option>
+        <option>Yes</option>
+        <option>No</option>
+      </select>
+    </div>
+    
+    <div class="field">
+      <label>Ownership Type</label>
+      <select id="ownership">
+        <option value="" selected></option>
+        <option>Finance</option>
+        <option>Lease</option>
+        <option>Owned</option>
+      </select>
+    </div>
+
+    <div class="field"><label>Finance/Lease Company Name</label><input id="companyName"></div>
+    <div class="field"><label>Finance/Lease Company Address</label><textarea id="companyAddress"></textarea></div>
+
+    <div class="field"><label>Effective Date</label><input id="effectiveDate" type="date"></div>
+    <div class="field"><label>Purchase Date</label><input id="purchaseDate" type="date"></div>
+
+    <div class="field"><label>Dealer Email Address</label><input id="dealerEmail"></div>
+    
+    <div class="field">
+<label>Call Notes Summary</label>
+<textarea id="summary" readonly style="height:200px;background:#f9fafb;"></textarea>
+</div>
+    <button onclick="clearForm()">Clear All Fields</button>
+  </div>
+<script>
+const fields = [
+{ id: 'vin', label: 'VIN' },
+{ id: 'year', label: 'Year' },
+{ id: 'make', label: 'Make' },
+{ id: 'model', label: 'Model' },
+{ id: 'odometer', label: 'Current Odometer Reading' },
+{ id: 'plates', label: 'Transferring Plates' },
+{ id: 'firstOwner', label: 'First Owner' },
+{ id: 'ownership', label: 'Ownership Type' },
+{ id: 'companyName', label: 'Finance/Lease Company Name' },
+{ id: 'companyAddress', label: 'Finance/Lease Company Address' },
+{ id: 'effectiveDate', label: 'Effective Date' },
+{ id: 'purchaseDate', label: 'Purchase Date' },
+{ id: 'dealerEmail', label: 'Dealer Email Address' }
+];
+function updateSummary() {
+let results = [];
+fields.forEach(field => {
+const el = document.getElementById(field.id);
+if (el && el.value.trim() !== '') {
+results.push(`${field.label}: ${el.value}`);
+}
+});
+document.getElementById('summary').value = results.join('\n');
+}
+function clearForm() {
+document.querySelectorAll('input, textarea, select').forEach(el => {
+if (el.id === 'summary') return;
+if (el.tagName === 'SELECT') {
+el.selectedIndex = 0;
+} else {
+el.value = '';
+}
+});
+updateSummary();
+const vinField = document.getElementById('vin');
+if (vinField) vinField.focus();
+}
+window.addEventListener('DOMContentLoaded', () => {
+document.querySelectorAll('input, textarea, select').forEach(el => {
+if (el.id !== 'summary') {
+el.addEventListener('input', updateSummary);
+el.addEventListener('change', updateSummary);
+}
+});
+});
+</script>
+</body>
+</html>
