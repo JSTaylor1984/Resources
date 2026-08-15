@@ -1,1 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Common Tools</title>
 
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #0018F9;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: 100vh;
+        padding: 40px 20px;
+        box-sizing: border-box;
+    }
+
+    .card {
+        background-color: white;
+        padding: 30px 40px;
+        border-radius: 15px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        width: 100%;
+        max-width: 500px;
+        text-align: center;
+    }
+
+    h2 {
+        margin-top: 0;
+        margin-bottom: 5px;
+    }
+
+    .subtitle {
+        color: #666;
+        font-size: 14px;
+        margin-bottom: 25px;
+    }
+
+    .search-box {
+        padding: 10px 12px;
+        font-size: 15px;
+        width: 100%;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        margin-bottom: 20px;
+        outline: none;
+        box-sizing: border-box;
+        transition: border 0.2s ease;
+    }
+
+    .search-box:focus {
+        border-color: #0018F9;
+    }
+
+    .link-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        text-align: left;
+    }
+
+    .link-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 14px;
+        border-radius: 10px;
+        margin-bottom: 8px;
+        text-decoration: none;
+        color: #222;
+        background-color: #f4f6ff;
+        border: 1px solid #e3e7ff;
+        transition: background-color 0.15s ease, transform 0.1s ease;
+    }
+
+    .link-item:hover {
+        background-color: #e3e7ff;
+        transform: translateX(2px);
+    }
+
+    .link-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .link-icon {
+        font-size: 18px;
+        width: 22px;
+        text-align: center;
+    }
+
+    .link-text {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .link-name {
+        font-weight: bold;
+        font-size: 15px;
+    }
+
+    .link-desc {
+        font-size: 12px;
+        color: #666;
+    }
+
+    .link-arrow {
+        color: #999;
+        font-size: 14px;
+    }
+
+    .no-match {
+        text-align: center;
+        color: #999;
+        font-size: 14px;
+        padding: 20px 0;
+    }
+
+    .back-link {
+        display: block;
+        margin-top: 20px;
+        font-size: 13px;
+        color: #ffffffcc;
+        text-decoration: none;
+    }
+
+    .back-link:hover {
+        text-decoration: underline;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="card">
+    <h2>🔧 Common Tools</h2>
+    <div class="subtitle">Quick links to everyday tools</div>
+
+    <input type="text" class="search-box" id="searchInput"
+        placeholder="Search tools..." oninput="filterLinks()" />
+
+    <ul class="link-list" id="linkList"></ul>
+
+    <div class="no-match" id="noMatch" style="display:none;">No tools match your search</div>
+</div>
+
+<script>
+    // Edit this list to add, remove, or reorder tools.
+    // icon: any emoji, name: shown in bold, desc: short helper text, url: destination link
+    const tools = [
+        { icon: "📇", name: "State Lookup", desc: "State-by-state action lookup", url: "../states/" },
+        { icon: "🏬", name: "Dealership Notes", desc: "Dealership reference notes", url: "../dealership/" },
+        { icon: "📨", name: "DMV Notify Template", desc: "ALIR notification template", url: "../dmv_notify/" },
+        { icon: "🔍", name: "VIN Validator", desc: "Validate a vehicle VIN", url: "https://www.carfaxbig.com/vin-validator.cfx" },
+        { icon: "🛠️", name: "Drive Easy Troubleshooting", desc: "PowerApps troubleshooting tool", url: "https://apps.powerapps.com/play/e/d4ced920-723a-423f-8f9d-64344f5fdaa9/a/473488f2-9117-43d2-8e10-9470b0042104" }
+    ];
+
+    function renderLinks(list) {
+        const ul = document.getElementById("linkList");
+        const noMatch = document.getElementById("noMatch");
+
+        ul.innerHTML = "";
+
+        if (list.length === 0) {
+            noMatch.style.display = "block";
+            return;
+        }
+
+        noMatch.style.display = "none";
+
+        list.forEach(tool => {
+            const li = document.createElement("li");
+
+            const a = document.createElement("a");
+            a.className = "link-item";
+            a.href = tool.url;
+            a.target = "_blank";
+            a.rel = "noopener noreferrer";
+
+            a.innerHTML = `
+                <span class="link-left">
+                    <span class="link-icon">${tool.icon}</span>
+                    <span class="link-text">
+                        <span class="link-name">${tool.name}</span>
+                        <span class="link-desc">${tool.desc}</span>
+                    </span>
+                </span>
+                <span class="link-arrow">↗</span>
+            `;
+
+            li.appendChild(a);
+            ul.appendChild(li);
+        });
+    }
+
+    function filterLinks() {
+        const query = document.getElementById("searchInput").value.toLowerCase().trim();
+
+        const filtered = tools.filter(tool =>
+            tool.name.toLowerCase().includes(query) ||
+            tool.desc.toLowerCase().includes(query)
+        );
+
+        renderLinks(filtered);
+    }
+
+    renderLinks(tools);
+</script>
+
+</body>
+</html>
